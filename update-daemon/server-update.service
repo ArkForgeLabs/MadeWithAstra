@@ -1,0 +1,11 @@
+# move it after modification to /etc/systemd/system/
+
+[Unit]
+Description=Server Updates service
+
+[Service]
+Type=simple
+Restart=always
+User=linuxuser
+ExecStart=/usr/bin/astra run /home/linuxuser/backend/update_daemon/update-daemon.tl
+WorkingDirectory=/home/linuxuser
