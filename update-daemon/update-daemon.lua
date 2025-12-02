@@ -17,11 +17,11 @@ local function remove_prefix(str, prefix)
   end
 end
 
-server:post("/cd_update", function(request, response)
+server:post("/", function(request, response)
   local headers = request:headers()
   local bearer_token = remove_prefix((headers["x-authorization"]):lower(), "bearer ")
   local project = headers["x-project"]
-  local project_conf = config.projects[project]
+  local project_conf = config[project]
   local cd_secret = project_conf.secret
   local multipart = request:multipart()
 
@@ -43,16 +43,10 @@ server:post("/cd_update", function(request, response)
   local project_path = project_conf.path
   local save_path = string.format("%s/%s", project_path, file_name)
 
-  print(string.format("Saving %s for project %s"), file_name, project)
+  local command = project_conf[multipart:file_name()] or project_conf[headers["x-filename"]] or project_conf.match[1] or
+      "echo Received!"
 
   multipart:save_file(save_path)
-
-  local command = "unpackage-backend"
-
-  local file_name = headers["x-filename"]
-  if file_name == "build_frontend.zip" then
-    command = "unpackage-frontend"
-  end
 
   os.execute("make " .. command)
 end, { body_limit = 64 * 1024 * 1024 })
