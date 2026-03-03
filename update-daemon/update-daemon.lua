@@ -43,8 +43,8 @@ server:post("/", function(request, response)
 	-- Directory path for each repository
 	local save_path = string.format("%s/%s", project_conf.project_path, file_name)
 
-	local command = project_conf[multipart:file_name()]
-		or project_conf[headers["x-filename"]]
+	local command = project_conf.match[multipart:file_name()]
+		or project_conf.match[headers["x-filename"]]
 		or project_conf.match[1]
 		or "echo Received!"
 
